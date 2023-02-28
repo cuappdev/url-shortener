@@ -83,16 +83,19 @@ const CreateLink = () => {
                             className="btn md:w-80"
                             onClick={async () => {
                                 if (!shortUrl || !origUrl) {
+                                    setSuccess(false);
                                     setError(true);
                                     setMessage("Please fill out all fields.");
                                     return;
                                 }
                                 if (!origUrl.startsWith("http")) {
+                                    setSuccess(false);
                                     setError(true);
                                     setMessage("Please enter a valid URL for the OG Link.");
                                     return;
                                 }
                                 if (await checkLinkExists(shortUrl)) {
+                                    setSuccess(false);
                                     setError(true);
                                     setMessage("This link already exists.");
                                     return;
@@ -100,8 +103,10 @@ const CreateLink = () => {
                                 const res = await shortenReq(shortUrl, origUrl);
                                 if (res.success) {
                                     setSuccess(true);
+                                    setError(false);
                                     setMessage("Link created successfully!");
                                 } else {
+                                    setSuccess(false);
                                     setError(true);
                                     setMessage(res.error);
                                 }
