@@ -34,6 +34,12 @@ const Login = () => {
   const userContext = useContext(UserContext);
   const router = useRouter();
 
+  if (userContext?.userInfo?.email === "cornellappdev@gmail.com") {
+    setTimeout(function () {
+      router.push("/createLink");
+    }, 3000);
+  }
+
   return (
     <>
       <Head>
@@ -48,7 +54,7 @@ const Login = () => {
         }
         {
           userContext?.userInfo?.email === "cornellappdev@gmail.com" &&
-          <h1>Logged In</h1>
+          <h1>Logged In, redirecting to dashboard in 3 seconds...</h1>
         }
       </main>
     </>

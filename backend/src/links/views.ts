@@ -18,7 +18,7 @@ linkRouter.get("/getById/:id", verifyToken, async (req, res) => {
 linkRouter.get("/:shortUrl", async (req, res) => {
   LinkController.getOrigFromShort(req.params.shortUrl)
     .then((origUrl) => res.send(successJson(origUrl)))
-    .catch((err) => res.send(errorJson(err)));
+    .catch((err) => res.status(404).send(errorJson(err)));
 });
 
 linkRouter.post("/", verifyToken, async (req, res) => {

@@ -21,12 +21,23 @@ const shortenReq = async (shortUrl: string, origUrl: string) => {
     return json;
 }
 
+const checkLinkExists = async (shortUrl: string) => {
+    const res = await fetch(`${process.env.SERVER}/links/${shortUrl}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    });
+
+    return res.status === 200;
+}
+
 const CreateLink = () => {
     const [shortUrl, setShortUrl] = useState<string>('');
     const [origUrl, setOrigUrl] = useState<string>('');
     const [success, setSuccess] = useState<boolean>(false);
     const [error, setError] = useState<boolean>(false);
-    const [message, setMessage] = useState<string>('');
+    const [message, setMessage] = useState<JSX.Element | string | null>(null);
     const user = useContext(UserContext);
     const router = useRouter();
     if (!user?.userInfo) {
@@ -54,16 +65,16 @@ const CreateLink = () => {
                             <span>OG Link</span>
                             <input
                                 type="text"
-                                placeholder="https://some-site"
+                                placeholder="https://some-site.com"
                                 className="input input-bordered md:w-80"
                                 onChange={e => setOrigUrl(e.target.value)}
                             />
                         </label>
                         <label className="input-group mb-10 justify-center">
-                            <span>New Link</span>
+                            <span>{document.location.hostname + "/"}</span>
                             <input
                                 type="text"
-                                placeholder="new-link"
+                                placeholder="short-name"
                                 className="input input-bordered md:w-80"
                                 onChange={e => setShortUrl(e.target.value)}
                             />
@@ -71,11 +82,37 @@ const CreateLink = () => {
                         <button
                             className="btn md:w-80"
                             onClick={async () => {
+                                if (!shortUrl || !origUrl) {
+                                    setSuccess(false);
+                                    setError(true);
+                                    setMessage("Please fill out all fields.");
+                                    return;
+                                }
+                                if (!origUrl.startsWith("http")) {
+                                    setSuccess(false);
+                                    setError(true);
+                                    setMessage("Please enter a valid URL for the OG Link.");
+                                    return;
+                                }
+                                if (await checkLinkExists(shortUrl)) {
+                                    setSuccess(false);
+                                    setError(true);
+                                    setMessage("This link already exists.");
+                                    return;
+                                }
                                 const res = await shortenReq(shortUrl, origUrl);
                                 if (res.success) {
                                     setSuccess(true);
-                                    setMessage("Link created successfully!");
+                                    setError(false);
+                                    setMessage(
+                                        <div>
+                                            <span>Link created successfully! Check it out here: </span>
+                                            <a href={"/" + shortUrl} className='underline' target="_blank">
+                                                {document.location.protocol + "//" + document.location.hostname + "/" + shortUrl}
+                                            </a></div>
+                                    );
                                 } else {
+                                    setSuccess(false);
                                     setError(true);
                                     setMessage(res.error);
                                 }
