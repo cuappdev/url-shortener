@@ -1,7 +1,7 @@
 import { UserContext } from "@/context/user";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import { auth } from "@/firebase/init";
 
 const shortenReq = async (shortUrl: string, origUrl: string) => {
@@ -54,16 +54,16 @@ const CreateLink = () => {
                             <span>OG Link</span>
                             <input
                                 type="text"
-                                placeholder="https://some-site"
+                                placeholder="https://some-site.com"
                                 className="input input-bordered md:w-80"
                                 onChange={e => setOrigUrl(e.target.value)}
                             />
                         </label>
                         <label className="input-group mb-10 justify-center">
-                            <span>New Link</span>
+                            <span>cuapp.dev/</span>
                             <input
                                 type="text"
-                                placeholder="new-link"
+                                placeholder="short-name"
                                 className="input input-bordered md:w-80"
                                 onChange={e => setShortUrl(e.target.value)}
                             />
