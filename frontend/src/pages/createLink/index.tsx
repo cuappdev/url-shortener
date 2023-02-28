@@ -37,7 +37,7 @@ const CreateLink = () => {
     const [origUrl, setOrigUrl] = useState<string>('');
     const [success, setSuccess] = useState<boolean>(false);
     const [error, setError] = useState<boolean>(false);
-    const [message, setMessage] = useState<string>('');
+    const [message, setMessage] = useState<JSX.Element | string | null>(null);
     const user = useContext(UserContext);
     const router = useRouter();
     if (!user?.userInfo) {
@@ -104,7 +104,13 @@ const CreateLink = () => {
                                 if (res.success) {
                                     setSuccess(true);
                                     setError(false);
-                                    setMessage("Link created successfully!");
+                                    setMessage(
+                                        <div>
+                                            <span>Link created successfully! Check it out here: </span>
+                                            <a href={"/" + shortUrl} className='underline' target="_blank">
+                                                {document.location.protocol + "//" + document.location.hostname + "/" + shortUrl}
+                                            </a></div>
+                                    );
                                 } else {
                                     setSuccess(false);
                                     setError(true);
