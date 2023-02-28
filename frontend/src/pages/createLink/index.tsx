@@ -71,7 +71,7 @@ const CreateLink = () => {
                             />
                         </label>
                         <label className="input-group mb-10 justify-center">
-                            <span>cuapp.dev/</span>
+                            <span>{document.location.hostname + "/"}</span>
                             <input
                                 type="text"
                                 placeholder="short-name"
