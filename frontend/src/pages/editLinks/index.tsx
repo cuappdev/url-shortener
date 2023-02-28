@@ -1,6 +1,7 @@
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
+import QRCode from "react-qr-code";
 import { auth } from "@/firebase/init";
 
 interface Link {
@@ -13,6 +14,7 @@ const LinkCard = ({ shortUrl, originalUrl, _id }: any) => {
     const [edit, setEdit] = useState(false)
     const [short, setShort] = useState(shortUrl)
     const [orig, setOrig] = useState(originalUrl)
+    const [qrVisible, setQrVisible] = useState(false)
 
     const updateLink = async () => {
         const res = await fetch(`${process.env.SERVER}/links/${_id}`, {
@@ -72,8 +74,29 @@ const LinkCard = ({ shortUrl, originalUrl, _id }: any) => {
                     {edit &&
                         <button className="btn ml-5" onClick={() => { updateLink(); setEdit(!edit) }}>Save</button>
                     }
+                    {!edit &&
+                        <button className="btn ml-5" onClick={() => { setQrVisible(true); }}>QR Code</button>
+                    }
                 </div>
             </div>
+            {qrVisible &&
+                <div>
+                    <input type="checkbox" id="qr-code-modal" className="modal-toggle" />
+                    <div className="modal modal-open">
+                        <div className="modal-box relative">
+                            <label htmlFor="qr-code-modal" className="btn btn-sm btn-circle absolute right-2 top-2" onClick={() => setQrVisible(false)}>✕</label>
+                            <h3 className="text-lg font-bold">QR Code for <span className="underline">{document.location.protocol + "//" + document.location.hostname + "/" + shortUrl}</span>:</h3>
+                            <QRCode
+                                size={256}
+                                level={"H"}
+                                style={{ height: "auto", maxWidth: "100%", width: "100%", padding: "20px", backgroundColor: "#ffffff", margin: "20px" }}
+                                value={document.location.protocol + "//" + document.location.hostname + "/" + shortUrl}
+                                viewBox={`0 0 256 256`}
+                            />
+                        </div>
+                    </div>
+                </div>
+            }
         </div>
     )
 }
