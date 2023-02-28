@@ -4,17 +4,58 @@ import { useState, useEffect } from "react";
 import QRCode from "react-qr-code";
 import { auth } from "@/firebase/init";
 
+const qrCodeWidth = 300;
+const qrCodeMargin = 20;
+
 interface Link {
     _id: any,
     shortUrl: string,
     originalUrl: string,
 }
 
+function download(href: string, name: string) {
+    var a = document.createElement('a');
+
+    a.download = name;
+    a.href = href;
+
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+}
+
+const saveQRCode = (qrCodeID: string) => {
+    // this function was made with help from: https://levelup.gitconnected.com/draw-an-svg-to-canvas-and-download-it-as-image-in-javascript-f7f7713cf81f
+    const qrCodeElement = document.getElementById(qrCodeID);
+    if (qrCodeElement instanceof SVGGraphicsElement) {
+        var svg = qrCodeElement as SVGGraphicsElement;
+        var blob = new Blob([svg.outerHTML], { type: 'image/svg+xml;charset=utf-8' });
+        let URL = window.URL || window.webkitURL || window;
+        let blobURL = URL.createObjectURL(blob);
+        let image = new Image();
+        image.onload = () => {
+            let canvas = document.createElement('canvas');
+            canvas.width = qrCodeWidth + 2 * qrCodeMargin;
+            canvas.height = qrCodeWidth + 2 * qrCodeMargin;
+            let context = canvas.getContext('2d');
+            if (context) {
+                context.fillStyle = 'white';
+                context.fillRect(0, 0, canvas.width, canvas.height);
+                context.drawImage(image, qrCodeMargin, qrCodeMargin, qrCodeWidth, qrCodeWidth);
+            }
+            let png = canvas.toDataURL();
+            download(png, 'qr.png');
+        };
+        image.src = blobURL;
+    }
+    return '';
+}
+
 const LinkCard = ({ shortUrl, originalUrl, _id }: any) => {
     const [edit, setEdit] = useState(false)
     const [short, setShort] = useState(shortUrl)
     const [orig, setOrig] = useState(originalUrl)
-    const [qrVisible, setQrVisible] = useState(false)
+    const [qrModalVisible, setqrModalVisible] = useState(false)
 
     const updateLink = async () => {
         const res = await fetch(`${process.env.SERVER}/links/${_id}`, {
@@ -75,29 +116,33 @@ const LinkCard = ({ shortUrl, originalUrl, _id }: any) => {
                         <button className="btn ml-5" onClick={() => { updateLink(); setEdit(!edit) }}>Save</button>
                     }
                     {!edit &&
-                        <button className="btn ml-5" onClick={() => { setQrVisible(true); }}>QR Code</button>
+                        <button className="btn ml-5" onClick={() => { setqrModalVisible(true); }}>QR Code</button>
                     }
                 </div>
             </div>
-            {qrVisible &&
+            {qrModalVisible &&
                 <div>
                     <input type="checkbox" id="qr-code-modal" className="modal-toggle" />
                     <div className="modal modal-open">
-                        <div className="modal-box relative">
-                            <label htmlFor="qr-code-modal" className="btn btn-sm btn-circle absolute right-2 top-2" onClick={() => setQrVisible(false)}>✕</label>
-                            <h3 className="text-lg font-bold">QR Code for <span className="underline">{document.location.protocol + "//" + document.location.hostname + "/" + shortUrl}</span>:</h3>
-                            <QRCode
-                                size={256}
-                                level={"H"}
-                                style={{ height: "auto", maxWidth: "100%", width: "100%", padding: "20px", backgroundColor: "#ffffff", margin: "20px" }}
-                                value={document.location.protocol + "//" + document.location.hostname + "/" + shortUrl}
-                                viewBox={`0 0 256 256`}
-                            />
+                        <div className="modal-box relative text-center">
+                            <label htmlFor="qr-code-modal" className="btn btn-sm btn-circle absolute right-2 top-2" onClick={() => setqrModalVisible(false)}>✕</label>
+                            <h3 className="text-lg font-bold">QR Code for <span className="underline">{document.location.protocol + "//" + document.location.hostname + "/" + shortUrl}</span></h3>
+                            <div style={{ backgroundColor: "#ffffff", padding: qrCodeMargin, marginTop: qrCodeMargin, marginBottom: qrCodeMargin, marginLeft: "auto", marginRight: "auto", width: qrCodeWidth }}>
+                                <QRCode
+                                    id="qr-code-img"
+                                    size={qrCodeWidth}
+                                    level={"H"}
+                                    style={{ height: "auto", maxWidth: "100%" }}
+                                    value={document.location.protocol + "//" + document.location.hostname + "/" + shortUrl + "?utm_source=qr"}
+                                    viewBox={`0 0 ${qrCodeWidth} ${qrCodeWidth}`}
+                                />
+                            </div>
+                            <button className="btn ml-5" onClick={() => saveQRCode("qr-code-img")}>Save Image</button>
                         </div>
                     </div>
                 </div>
             }
-        </div>
+        </div >
     )
 }
 
