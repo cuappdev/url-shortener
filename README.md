@@ -6,4 +6,4 @@ The frontend and backend both make use of TypeScript, and the repository comes p
 
 The frontend and backend repos each have a README to help you get started with the project.
 
-To get started, either fork this repo or clone using `git clone https://github.com/Archit404Error/MERN-webapp`
+To get started, either fork this repo or clone using `git clone https://github.com/cuappdev/url-shortener`
