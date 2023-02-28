@@ -1,7 +1,7 @@
 import { UserContext } from "@/context/user";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { useContext, useState, useEffect } from "react";
+import { useContext, useState } from "react";
 import { auth } from "@/firebase/init";
 
 const shortenReq = async (shortUrl: string, origUrl: string) => {
@@ -19,6 +19,17 @@ const shortenReq = async (shortUrl: string, origUrl: string) => {
 
     const json = await res.json();
     return json;
+}
+
+const checkLinkExists = async (shortUrl: string) => {
+    const res = await fetch(`${process.env.SERVER}/links/${shortUrl}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    });
+
+    return res.status === 200;
 }
 
 const CreateLink = () => {
@@ -71,6 +82,21 @@ const CreateLink = () => {
                         <button
                             className="btn md:w-80"
                             onClick={async () => {
+                                if (!shortUrl || !origUrl) {
+                                    setError(true);
+                                    setMessage("Please fill out all fields.");
+                                    return;
+                                }
+                                if (!origUrl.startsWith("http")) {
+                                    setError(true);
+                                    setMessage("Please enter a valid URL for the OG Link.");
+                                    return;
+                                }
+                                if (await checkLinkExists(shortUrl)) {
+                                    setError(true);
+                                    setMessage("This link already exists.");
+                                    return;
+                                }
                                 const res = await shortenReq(shortUrl, origUrl);
                                 if (res.success) {
                                     setSuccess(true);
