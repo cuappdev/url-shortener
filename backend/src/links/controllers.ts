@@ -21,9 +21,12 @@ const getLinkById = async (id: mongoose.Types.ObjectId) =>
  * @param shortUrl the shortened url
  * @returns promise with original link or error
  */
-const getOrigFromShort = async (shortUrl: string) => {
+const getOrigFromShort = async (shortUrl: string, qr: boolean) => {
   const res = await LinkModel.findOne({ shortUrl: shortUrl });
   if (!res) throw new Error("No link found");
+  if (qr) res.qrVisits++;
+  else res.urlVisits++;
+  res.save();
   return res.originalUrl;
 };
 

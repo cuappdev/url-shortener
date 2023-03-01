@@ -7,9 +7,17 @@ class Link {
   @prop()
   public originalUrl!: string;
 
+  @prop()
+  public urlVisits!: number;
+
+  @prop()
+  public qrVisits!: number;
+
   constructor(customUrl: string, originalUrl: string) {
     this.shortUrl = customUrl;
     this.originalUrl = originalUrl;
+    this.urlVisits = 0;
+    this.qrVisits = 0;
   }
 }
 
