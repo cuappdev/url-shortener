@@ -20,7 +20,7 @@ const Short = () => {
             if (orig.success)
                 window.location.assign(orig.data);
             else
-                setMessage("Err: Invalid link")
+                setMessage("Error: Invalid link")
         })()
     }, [short]);
 
