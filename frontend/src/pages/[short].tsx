@@ -1,3 +1,5 @@
+import Head from "next/head";
+import Image from "next/image";
 import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
 
@@ -18,11 +20,24 @@ const Short = () => {
             if (orig.success)
                 window.location.assign(orig.data);
             else
-                setMessage("Err: Invalid link")
+                setMessage("Error: Invalid link")
         })()
     }, [short]);
 
-    return <h1>{message}</h1>;
+    return <>
+        <Head>
+            <title>{message}</title>
+        </Head>
+        <div className="p-5">
+            <div className="flex h-screen">
+                <div className="flex flex-col justify-center items-center m-auto">
+                    <Image src="/logo.png" alt="AppDev Logo" width={50} height={50} />
+                    <h1 className="text-3xl mt-10 mb-10 font-serif">{message}</h1>
+                </div>
+
+            </div>
+        </div>
+    </>;
 }
 
 export default Short;
