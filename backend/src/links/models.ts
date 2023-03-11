@@ -8,10 +8,10 @@ class Link {
   public originalUrl!: string;
 
   @prop()
-  public urlVisits!: number;
+  public urlVisits?: number;
 
   @prop()
-  public qrVisits!: number;
+  public qrVisits?: number;
 
   constructor(customUrl: string, originalUrl: string) {
     this.shortUrl = customUrl;
