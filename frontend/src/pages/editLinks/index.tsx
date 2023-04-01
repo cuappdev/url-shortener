@@ -11,6 +11,8 @@ interface Link {
     _id: any,
     shortUrl: string,
     originalUrl: string,
+    urlVisits?: number,
+    qrVisits?: number,
 }
 
 function download(href: string, name: string) {
@@ -51,7 +53,7 @@ const saveQRCode = (qrCodeID: string) => {
     return '';
 }
 
-const LinkCard = ({ shortUrl, originalUrl, _id }: any) => {
+const LinkCard = ({ _id, shortUrl, originalUrl, urlVisits, qrVisits }: Link) => {
     const [edit, setEdit] = useState(false)
     const [short, setShort] = useState(shortUrl)
     const [orig, setOrig] = useState(originalUrl)
@@ -84,8 +86,14 @@ const LinkCard = ({ shortUrl, originalUrl, _id }: any) => {
                                 <h1 className="font-serif text-2xl mb-5 break-all">
                                     Alias: {short}
                                 </h1>
-                                <h1 className="font-serif text-2xl break-all">
+                                <h1 className="font-serif text-2xl mb-5 break-all">
                                     Original: {orig}
+                                </h1>
+                                <h1 className="font-serif text-2xl mb-5 break-all">
+                                    Direct Visits: {urlVisits ? urlVisits : 0}
+                                </h1>
+                                <h1 className="font-serif text-2xl break-all">
+                                    QR Visits: {qrVisits ? qrVisits : 0}
                                 </h1>
                             </>
                         }
