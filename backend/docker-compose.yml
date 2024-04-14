@@ -2,9 +2,7 @@ version: "3.6"
 
 services:
   web:
-    build: 
-      context: .
-      dockerfile: Dockerfile
+    image: cornellappdev/url-shortener:latest
     env_file: .env
     ports:
       - "8080:8080"
