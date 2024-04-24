@@ -13,7 +13,7 @@ const fetchOrigUrl = async (shortUrl: string) => {
 const Short = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  let encodedSearchParams = [];
+  let encodedSearchParams: any = [];
   for (const [key, val] of searchParams.entries()) {
     encodedSearchParams.push(`${key}=${val}`);
   }
